@@ -19,7 +19,9 @@
       "es6/",
       "node_modules/"
     ],
-    "setupFiles": ["jest-localstorage-mock"]
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ]
   },
   "scripts": {
     "build": "sh build.sh",
