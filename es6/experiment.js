@@ -35,9 +35,9 @@ export default function provideExperiment(Assignment) {
       }
     }
 
-    requireExposureLogging(paramName) {
+    async requireExposureLogging(paramName) {
       if (this.shouldLogExposure(paramName)) {
-        this.logExposure();
+        return this.logExposure();
       }
     }
 
@@ -146,31 +146,32 @@ export default function provideExperiment(Assignment) {
       this._autoExposureLog = value;
     }
 
-    getParams() {
+    async getParams() {
       this.requireAssignment();
-      this.requireExposureLogging();
+      await this.requireExposureLogging()
       return this._assignment.getParams();
     }
 
-    get(name, def) {
+    async get(name, def) {
+      console.log('in get');
       this.requireAssignment();
-      this.requireExposureLogging(name);
+      await this.requireExposureLogging(name);
       this.setLocalOverride(name);
       return this._assignment.get(name, def);
     }
 
-    toString() {
+    async toString() {
       this.requireAssignment();
-      this.requireExposureLogging();
+      await this.requireExposureLogging();
       return JSON.stringify(this.__asBlob());
     }
 
-    logExposure(extras) {
+    async logExposure(extras) {
       if (!this.inExperiment()) {
         return;
       }
       this._exposureLogged = true;
-      this.logEvent('exposure', extras);
+      return this.logEvent('exposure', extras);
     }
 
     shouldLogExposure(paramName) {
@@ -193,14 +194,14 @@ export default function provideExperiment(Assignment) {
         extraPayload = { 'event': eventType };
       }
 
-      this.log(this.__asBlob(extraPayload));
+      return this.log(this.__asBlob(extraPayload));
     }
 
     configureLogger() {
       throw "IMPLEMENT configureLogger";
     }
 
-    log(data) {
+    async log(data) {
       throw "IMPLEMENT log";
     }
 
