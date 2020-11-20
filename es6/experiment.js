@@ -153,7 +153,6 @@ export default function provideExperiment(Assignment) {
     }
 
     async get(name, def) {
-      console.log('in get');
       this.requireAssignment();
       await this.requireExposureLogging(name);
       this.setLocalOverride(name);
