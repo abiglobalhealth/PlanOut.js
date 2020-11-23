@@ -201,7 +201,7 @@ export default function provideExperiment(Assignment) {
     }
 
     configureLogger() {
-      throw "IMPLEMENT configureLogger";
+      // Override if needed
     }
 
     async log(data) {
