@@ -2,9 +2,9 @@ import { shallowCopy, extend, isObject, forEach, map, trimTrailingWhitespace, ge
 
 export default function provideExperiment(Assignment) {
   class Experiment {
-    constructor(inputs) {
+    constructor(inputs, wasLogged) {
       this.inputs = inputs;
-      this._exposureLogged = false;
+      this._exposureLogged = wasLogged || false;
       this._salt = null;
       this._inExperiment = true;
       this._autoExposureLog = true;
@@ -164,6 +164,10 @@ export default function provideExperiment(Assignment) {
       await this.requireExposureLogging();
       return JSON.stringify(this.__asBlob());
     }
+    
+    setExposureLogged() {
+      this._exposureLogged = true;
+    }
 
     async logExposure(extras) {
       if (!this.inExperiment()) {
@@ -205,7 +209,7 @@ export default function provideExperiment(Assignment) {
     }
 
     previouslyLogged() {
-      throw "IMPLEMENT previouslyLogged";
+      return this._exposureLogged;
     }
   }
 
