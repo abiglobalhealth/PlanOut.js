@@ -2,6 +2,7 @@
   "name": "planout",
   "version": "5.1.1",
   "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.12.1",
     "bignumber.js": "9.0.0",
     "sha1": "1.1.1"
   },

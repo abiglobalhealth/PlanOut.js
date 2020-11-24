@@ -3,5 +3,6 @@
   plugins: [
     '@babel/plugin-proposal-function-bind',
     '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-transform-runtime'
   ]
 }
