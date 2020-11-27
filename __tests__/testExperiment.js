@@ -59,11 +59,11 @@ describe("Test the experiment module", function() {
       });
     };
 
-    experimentTester = function (expClass, compat=false, inExperiment=true) {
+    experimentTester = async function (expClass, compat=false, inExperiment=true) {
       globalLog = [];
       var e = new expClass({ 'i': 42});
       e.setOverrides({'bar': 42});
-      var params = e.getParams();
+      var params = await e.getParams();
 
       if (compat) {
         expect(params['foo']).not.toBe(undefined);
@@ -89,42 +89,42 @@ describe("Test the experiment module", function() {
     };
   });
 
-  it('should work with basic experiments', function() {
+  it('should work with basic experiments', async function() {
     class TestVanillaExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('foo', new UniformChoice({'choices': ['a', 'b'], 'unit': args.i}));
       }
     }
-    experimentTester(TestVanillaExperiment);
+    await experimentTester(TestVanillaExperiment);
   });
 
-  it('should work with basic experiments (compat)', function() {
+  it('should work with basic experiments (compat)', async function() {
     class TestVanillaExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('foo', new UniformChoiceCompat({'choices': ['a', 'b'], 'unit': args.i}));
       }
     }
-    experimentTester(TestVanillaExperiment, true);
+    await experimentTester(TestVanillaExperiment, true);
   });
 
-  it('should be able to disable an experiment', function() {
+  it('should be able to disable an experiment', async function() {
     class TestVanillaExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('foo', new UniformChoice({'choices': ['a', 'b'], 'unit': args.i}));
         return false;
       }
     }
-    experimentTester(TestVanillaExperiment, false, false);
+    await experimentTester(TestVanillaExperiment, false, false);
   });
 
-  it('should be able to disable an experiment (compat)', function() {
+  it('should be able to disable an experiment (compat)', async function() {
     class TestVanillaExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('foo', new UniformChoiceCompat({'choices': ['a', 'b'], 'unit': args.i}));
         return false;
       }
     }
-    experimentTester(TestVanillaExperiment, true, false);
+    await experimentTester(TestVanillaExperiment, true, false);
   });
 
   it('should only assign once', function() {
@@ -147,7 +147,7 @@ describe("Test the experiment module", function() {
     expect(assignment_count.count).toEqual(1);
   });
 
-  it('should return default value', function() {
+  it('should return default value', async function() {
     class TestDefaultValue extends BaseExperiment {
       assign(params, args) {
         params.set('foo', new UniformChoice({'choices': ['a', 'b'], 'unit': args.i}));
@@ -157,12 +157,12 @@ describe("Test the experiment module", function() {
     }
 
     var e = new TestDefaultValue({'i': 10});
-    expect(e.get('bar', 'boom')).toEqual('boom');
-    expect(e.get('test_undefined', 'boom')).toEqual('boom');
-    expect(e.get('test_null', 'boom')).toEqual('boom');
+    expect(await e.get('bar', 'boom')).toEqual('boom');
+    expect(await e.get('test_undefined', 'boom')).toEqual('boom');
+    expect(await e.get('test_null', 'boom')).toEqual('boom');
   });
 
-  it('should return default value (compat)', function() {
+  it('should return default value (compat)', async function() {
     class TestDefaultValue extends BaseExperimentCompat {
       assign(params, args) {
         params.set('foo', new UniformChoice({'choices': ['a', 'b'], 'unit': args.i}));
@@ -172,12 +172,12 @@ describe("Test the experiment module", function() {
     }
 
     var e = new TestDefaultValue({'i': 10});
-    expect(e.get('bar', 'boom')).toEqual('boom');
-    expect(e.get('test_undefined', 'boom')).toEqual('boom');
-    expect(e.get('test_null', 'boom')).toEqual('boom');
+    expect(await e.get('bar', 'boom')).toEqual('boom');
+    expect(await e.get('test_undefined', 'boom')).toEqual('boom');
+    expect(await e.get('test_null', 'boom')).toEqual('boom');
   });
 
-  it('should only assign once (compat)', function() {
+  it('should only assign once (compat)', async function() {
 
     class TestSingleAssignment extends BaseExperimentCompat {
       assign(params, args) {
@@ -191,9 +191,9 @@ describe("Test the experiment module", function() {
     var assignment_count = {'count': 0};
     var e = new TestSingleAssignment({'i': 10, 'counter': assignment_count});
     expect(assignment_count.count).toEqual(0);
-    e.get('foo');
+    await e.get('foo');
     expect(assignment_count.count).toEqual(1);
-    e.get('foo');
+    await e.get('foo');
     expect(assignment_count.count).toEqual(1);
   });
 
@@ -299,7 +299,7 @@ describe("Test the experiment module", function() {
     experimentTester(TestInterpretedExperiment, true);
   });
 
-  it('should not log exposure if "get" is called on a param not in the experiment', function() {
+  it('should not log exposure if "get" is called on a param not in the experiment', async function() {
     class TestVanillaExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('foo', new UniformChoice({'choices': ['a', 'b'], 'unit': args.i}));
@@ -307,11 +307,11 @@ describe("Test the experiment module", function() {
     }
     globalLog = [];
     var e = new TestVanillaExperiment({ 'i': 42});
-    e.get('fobz');
+    await e.get('fobz');
     expect(globalLog.length).toEqual(0);
   });
 
-  it('should not log exposure if "get" is called on a param not in the experiment (compat)', function() {
+  it('should not log exposure if "get" is called on a param not in the experiment (compat)', async function() {
     class TestVanillaExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('foo', new UniformChoiceCompat({'choices': ['a', 'b'], 'unit': args.i}));
@@ -319,11 +319,11 @@ describe("Test the experiment module", function() {
     }
     globalLog = [];
     var e = new TestVanillaExperiment({ 'i': 42});
-    e.get('fobz');
+    await e.get('fobz');
     expect(globalLog.length).toEqual(0);
   });
 
-  it('should allow local overrides', function() {
+  it('should allow local overrides', async function() {
     class TestLocalOverrides extends BaseExperiment {
       assign(params, args) {
         params.set('localOverride', 'not overridden');
@@ -332,10 +332,10 @@ describe("Test the experiment module", function() {
     var e = new TestLocalOverrides();
     localStorage.setItem('experimentOverride', e.name);
     localStorage.setItem('localOverride', 'overridden');
-    expect(e.get('localOverride')).toEqual('overridden');
+    expect(await e.get('localOverride')).toEqual('overridden');
   });
 
-  it('should allow local overrides (compat)', function() {
+  it('should allow local overrides (compat)', async function() {
     class TestLocalOverrides extends BaseExperimentCompat {
       assign(params, args) {
         params.set('localOverride', 'not overridden');
@@ -344,6 +344,6 @@ describe("Test the experiment module", function() {
     var e = new TestLocalOverrides();
     localStorage.setItem('experimentOverride', e.name);
     localStorage.setItem('localOverride', 'overridden');
-    expect(e.get('localOverride')).toEqual('overridden');
+    expect(await e.get('localOverride')).toEqual('overridden');
   });
 });

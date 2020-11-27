@@ -140,35 +140,35 @@ describe("Test namespace module", function() {
     globalLog = [];
   });
 
-  it('Adds segment correctly', function() {
+  it('Adds segment correctly', async function() {
     class TestNamespace extends BaseTestNamespace {
       setupExperiments() {
         this.addExperiment('Experiment1', Experiment1, 100);
       }
     };
     var namespace = new TestNamespace({'userid': 'blah'});
-    expect(namespace.get('test')).toEqual(1);
+    expect(await namespace.get('test')).toEqual(1);
     expect(namespace.availableSegments.length).toEqual(0);
     expect(Object.keys(namespace.segmentAllocations).length).toEqual(100);
     validateLog("Experiment1");
     validateSegments(namespace, { Experiment1: 100 });
   });
 
-  it('Adds segment correctly (compat)', function() {
+  it('Adds segment correctly (compat)', async function() {
     class TestNamespace extends BaseTestNamespaceCompat {
       setupExperiments() {
         this.addExperiment('Experiment1', Experiment1, 100);
       }
     };
     var namespace = new TestNamespace({'userid': 'blah'});
-    expect(namespace.get('test')).toEqual(1);
+    expect(await namespace.get('test')).toEqual(1);
     expect(namespace.availableSegments.length).toEqual(0);
     expect(Object.keys(namespace.segmentAllocations).length).toEqual(100);
     validateLog("Experiment1");
     validateSegments(namespace, { Experiment1: 100 });
   });
 
-  it('Adds two segments correctly', function() {
+  it('Adds two segments correctly', async function() {
     class TestNamespace extends BaseTestNamespace {
       setupExperiments() {
         this.addExperiment('Experiment1', Experiment1, 50);
@@ -177,23 +177,23 @@ describe("Test namespace module", function() {
     };
 
     var namespace = new TestNamespace({'userid': 'blah'});
-    expect(namespace.get('test')).toEqual(1);
+    expect(await namespace.get('test')).toEqual(1);
     validateLog("Experiment1");
     globalLog = [];
     var namespace2 = new TestNamespace({'userid': 'abb'});
-    expect(namespace2.get('test')).toEqual(2);
+    expect(await namespace2.get('test')).toEqual(2);
     validateLog("Experiment2");
     var segValidation = { Experiment1: 50, Experiment2: 50};
     validateSegments(namespace, segValidation);
 
-    expect(new TestNamespace({'userid': 'a'}).get('test')).toEqual(1);
-    expect(new TestNamespace({'userid': 'b'}).get('test')).toEqual(1);
-    expect(new TestNamespace({'userid': 'c'}).get('test')).toEqual(2);
-    expect(new TestNamespace({'userid': 'd'}).get('test')).toEqual(1);
-    expect(new TestNamespace({'userid': 'e'}).get('test')).toEqual(2);
+    expect(await new TestNamespace({'userid': 'a'}).get('test')).toEqual(1);
+    expect(await new TestNamespace({'userid': 'b'}).get('test')).toEqual(1);
+    expect(await new TestNamespace({'userid': 'c'}).get('test')).toEqual(2);
+    expect(await new TestNamespace({'userid': 'd'}).get('test')).toEqual(1);
+    expect(await new TestNamespace({'userid': 'e'}).get('test')).toEqual(2);
   });
 
-  it('Adds two segments correctly (compat)', function() {
+  it('Adds two segments correctly (compat)', async function() {
     class TestNamespace extends BaseTestNamespaceCompat {
       setupExperiments() {
         this.addExperiment('Experiment1', Experiment1, 50);
@@ -202,23 +202,23 @@ describe("Test namespace module", function() {
     };
 
     var namespace = new TestNamespace({'userid': 'blah'});
-    expect(namespace.get('test')).toEqual(1);
+    expect(await namespace.get('test')).toEqual(1);
     validateLog("Experiment1");
     globalLog = [];
     var namespace2 = new TestNamespace({'userid': 'abb'});
-    expect(namespace2.get('test')).toEqual(2);
+    expect(await namespace2.get('test')).toEqual(2);
     validateLog("Experiment2");
     var segValidation = { Experiment1: 50, Experiment2: 50};
     validateSegments(namespace, segValidation);
 
-    expect(new TestNamespace({'userid': 'a'}).get('test')).toEqual(2);
-    expect(new TestNamespace({'userid': 'b'}).get('test')).toEqual(2);
-    expect(new TestNamespace({'userid': 'c'}).get('test')).toEqual(1);
-    expect(new TestNamespace({'userid': 'd'}).get('test')).toEqual(2);
-    expect(new TestNamespace({'userid': 'e'}).get('test')).toEqual(2);
+    expect(await new TestNamespace({'userid': 'a'}).get('test')).toEqual(2);
+    expect(await new TestNamespace({'userid': 'b'}).get('test')).toEqual(2);
+    expect(await new TestNamespace({'userid': 'c'}).get('test')).toEqual(1);
+    expect(await new TestNamespace({'userid': 'd'}).get('test')).toEqual(2);
+    expect(await new TestNamespace({'userid': 'e'}).get('test')).toEqual(2);
   });
 
-  it('Can remove segment correctly', function() {
+  it('Can remove segment correctly', async function() {
     class TestNamespace extends BaseTestNamespace {
       setupDefaults() {
         this.numSegments = 10;
@@ -235,14 +235,14 @@ describe("Test namespace module", function() {
     for(var i = 0; i < 100; i++) {
       str += "h";
       var namespace = new TestNamespace({'userid': str});
-      expect(namespace.get('test')).toEqual(2);
+      expect(await namespace.get('test')).toEqual(2);
       validateLog("Experiment2");
     }
     var namespace = new TestNamespace({'userid': str});
     validateSegments(namespace, { Experiment2: 10 });
   });
 
-  it('Can remove segment correctly (compat)', function() {
+  it('Can remove segment correctly (compat)', async function() {
     class TestNamespace extends BaseTestNamespaceCompat {
       setupDefaults() {
         this.numSegments = 10;
@@ -259,14 +259,14 @@ describe("Test namespace module", function() {
     for(var i = 0; i < 100; i++) {
       str += "h";
       var namespace = new TestNamespace({'userid': str});
-      expect(namespace.get('test')).toEqual(2);
+      expect(await namespace.get('test')).toEqual(2);
       validateLog("Experiment2");
     }
     var namespace = new TestNamespace({'userid': str});
     validateSegments(namespace, { Experiment2: 10 });
   });
 
-  it('Should only log exposure when user could be in experiment', function() {
+  it('Should only log exposure when user could be in experiment', async function() {
     class TestNamespace extends BaseTestNamespace {
       setupDefaults() {
         this.numSegments = 10;
@@ -279,13 +279,13 @@ describe("Test namespace module", function() {
     }
 
     var namespace = new TestNamespace({'userid': 'hi'});
-    expect(namespace.get('test2')).toEqual(3);
+    expect(await namespace.get('test2')).toEqual(3);
     expect(globalLog.length).toEqual(1);
-    expect(namespace.get('test')).toBeUndefined();
+    expect(await namespace.get('test')).toBeUndefined();
     validateLog("Experiment3");
   });
 
-  it('Should only log exposure when user could be in experiment (compat)', function() {
+  it('Should only log exposure when user could be in experiment (compat)', async function() {
     class TestNamespace extends BaseTestNamespaceCompat {
       setupDefaults() {
         this.numSegments = 10;
@@ -298,13 +298,13 @@ describe("Test namespace module", function() {
     }
 
     var namespace = new TestNamespace({'userid': 'hi'});
-    expect(namespace.get('test')).toEqual(1);
+    expect(await namespace.get('test')).toEqual(1);
     expect(globalLog.length).toEqual(1);
-    expect(namespace.get('test2')).toBeUndefined();
+    expect(await namespace.get('test2')).toBeUndefined();
     validateLog("Experiment1");
   });
 
-  it('Allow experiment overrides in SimpleNamespace', function() {
+  it('Allow experiment overrides in SimpleNamespace', async function() {
     class TestNamespace extends BaseTestNamespace {
       setupExperiments() {
         this.addExperiment('Experiment1', Experiment1, 50);
@@ -330,14 +330,14 @@ describe("Test namespace module", function() {
     }
 
     var namespace = new TestNamespace({'userid': 'hi'});
-    expect(namespace.get('test')).toEqual('overridden');
+    expect(await namespace.get('test')).toEqual('overridden');
     validateLog('Experiment1');
     globalLog = [];
-    expect(namespace.get('test2')).toEqual('overridden2');
+    expect(await namespace.get('test2')).toEqual('overridden2');
     validateLog('Experiment3');
   });
 
-  it('Allow experiment overrides in SimpleNamespace (compat)', function() {
+  it('Allow experiment overrides in SimpleNamespace (compat)', async function() {
     class TestNamespace extends BaseTestNamespaceCompat {
       setupExperiments() {
         this.addExperiment('Experiment1', Experiment1, 50);
@@ -363,14 +363,14 @@ describe("Test namespace module", function() {
     }
 
     var namespace = new TestNamespace({'userid': 'hi'});
-    expect(namespace.get('test')).toEqual('overridden');
+    expect(await namespace.get('test')).toEqual('overridden');
     validateLog('Experiment1');
     globalLog = [];
-    expect(namespace.get('test2')).toEqual('overridden2');
+    expect(await namespace.get('test2')).toEqual('overridden2');
     validateLog('Experiment3');
   });
 
-  it('should respect auto exposure logging being set to off', function() {
+  it('should respect auto exposure logging being set to off', async function() {
     class ExperimentNoExposure extends BaseExperiment {
       setup() {
         this.setAutoExposureLogging(false);
@@ -388,11 +388,11 @@ describe("Test namespace module", function() {
     };
 
     var namespace = new TestNamespace({'userid': 'hi'});
-    namespace.get('test');
+    await namespace.get('test');
     expect(globalLog.length).toEqual(0);
   });
 
-  it('should respect auto exposure logging being set to off (compat)', function() {
+  it('should respect auto exposure logging being set to off (compat)', async function() {
     class ExperimentNoExposure extends BaseExperimentCompat {
       setup() {
         this.setAutoExposureLogging(false);
@@ -410,11 +410,11 @@ describe("Test namespace module", function() {
     };
 
     var namespace = new TestNamespace({'userid': 'hi'});
-    namespace.get('test');
+    await namespace.get('test');
     expect(globalLog.length).toEqual(0);
   });
 
-  it('should respect dynamic getParamNames', function() {
+  it('should respect dynamic getParamNames', async function() {
     class ExperimentParamTest extends Experiment1 {
 
       assign(params, args) {
@@ -436,13 +436,13 @@ describe("Test namespace module", function() {
       }
     };
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    namespace.get('test');
+    await namespace.get('test');
     expect(globalLog.length).toEqual(0);
-    namespace.get('foo');
-    expect(globalLog.length).toEqual(1);
+    await namespace.get('foo');
+    await expect(globalLog.length).toEqual(1);
   });
 
-  it('should respect dynamic getParamNames (compat)', function() {
+  it('should respect dynamic getParamNames (compat)', async function() {
     class ExperimentParamTest extends Experiment1Compat {
 
       assign(params, args) {
@@ -464,13 +464,13 @@ describe("Test namespace module", function() {
       }
     };
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    namespace.get('test');
+    await namespace.get('test');
     expect(globalLog.length).toEqual(0);
-    namespace.get('foo');
-    expect(globalLog.length).toEqual(1);
+    await namespace.get('foo');
+    await expect(globalLog.length).toEqual(1);
   });
 
-  it('should work with getParams', () => {
+  it('should work with getParams', async () => {
     class SimpleExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('test', 1)
@@ -487,15 +487,15 @@ describe("Test namespace module", function() {
       }
     }
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    namespace.getParams('SimpleExperiment');
+    await namespace.getParams('SimpleExperiment');
     expect(globalLog.length).toEqual(0);
     var namespace2 = new TestNamespace2({'userid': 'hi', 'foo': 1, 'bar': 1});
-    var params = namespace2.getParams('SimpleExperiment');
+    var params = await namespace2.getParams('SimpleExperiment');
     expect(globalLog.length).toEqual(1);
     expect(params).toEqual({'test': 1});
   });
 
-  it('should work with getParams (compat)', () => {
+  it('should work with getParams (compat)', async () => {
     class SimpleExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('test', 1)
@@ -512,15 +512,15 @@ describe("Test namespace module", function() {
       }
     }
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    namespace.getParams('SimpleExperiment');
+    await namespace.getParams('SimpleExperiment');
     expect(globalLog.length).toEqual(0);
     var namespace2 = new TestNamespace2({'userid': 'hi', 'foo': 1, 'bar': 1});
-    var params = namespace2.getParams('SimpleExperiment');
+    var params = await namespace2.getParams('SimpleExperiment');
     expect(globalLog.length).toEqual(1);
     expect(params).toEqual({'test': 1});
   });
 
-  it('should only log exposure if "get" is called on a valid param', function() {
+  it('should only log exposure if "get" is called on a valid param', async function() {
     class SimpleExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('test', 1)
@@ -532,13 +532,13 @@ describe("Test namespace module", function() {
       }
     };
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    namespace.get('foobar');
+    await namespace.get('foobar');
     expect(globalLog.length).toEqual(0);
-    expect(namespace.get('test')).toBe(1);
+    await expect(await namespace.get('test')).toBe(1);
     expect(globalLog.length).toEqual(1);
   });
 
-  it('should only log exposure if "get" is called on a valid param (compat)', function() {
+  it('should only log exposure if "get" is called on a valid param (compat)', async function() {
     class SimpleExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('test', 1)
@@ -550,13 +550,13 @@ describe("Test namespace module", function() {
       }
     };
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    namespace.get('foobar');
+    await namespace.get('foobar');
     expect(globalLog.length).toEqual(0);
-    expect(namespace.get('test')).toBe(1);
+    await expect(await namespace.get('test')).toBe(1);
     expect(globalLog.length).toEqual(1);
   });
 
-  it('should return default value if provided and "get" is called on an invalid param', function() {
+  it('should return default value if provided and "get" is called on an invalid param', async function() {
     class SimpleExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('test', 1)
@@ -570,13 +570,13 @@ describe("Test namespace module", function() {
       }
     };
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    expect(namespace.get('foobar', 'boom')).toEqual('boom');
-    expect(namespace.get('test_undefined', 'boom')).toEqual('boom');
-    expect(namespace.get('test_null', 'boom')).toEqual('boom');
+    expect(await namespace.get('foobar', 'boom')).toEqual('boom');
+    expect(await namespace.get('test_undefined', 'boom')).toEqual('boom');
+    expect(await namespace.get('test_null', 'boom')).toEqual('boom');
   });
 
   it('should return default value if provided and "get" is called on an invalid param (compat)',
-      function() {
+      async function() {
     class SimpleExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('test', 1)
@@ -590,12 +590,12 @@ describe("Test namespace module", function() {
       }
     };
     var namespace = new TestNamespace({'userid': 'hi', 'foo': 1, 'bar': 1});
-    expect(namespace.get('foobar', 'boom')).toEqual('boom');
-    expect(namespace.get('test_undefined', 'boom')).toEqual('boom');
-    expect(namespace.get('test_null', 'boom')).toEqual('boom');
+    expect(await namespace.get('foobar', 'boom')).toEqual('boom');
+    expect(await namespace.get('test_undefined', 'boom')).toEqual('boom');
+    expect(await namespace.get('test_null', 'boom')).toEqual('boom');
   });
 
-  it('should work with experiment setup', function() {
+  it('should work with experiment setup', async function() {
     class SimpleExperiment extends BaseExperiment {
       assign(params, args) {
         params.set('test', 1)
@@ -608,11 +608,11 @@ describe("Test namespace module", function() {
     };
     var namespace = new TestNamespace({'foo': 1, 'bar': 1});
     ExperimentSetup.registerExperimentInput('userid', 'hi');
-    expect(namespace.get('test')).toBe(1);
+    expect(await namespace.get('test')).toBe(1);
     expect(globalLog.length).toEqual(1);
   });
 
-  it('should work with experiment setup (compat)', function() {
+  it('should work with experiment setup (compat)', async function() {
     class SimpleExperiment extends BaseExperimentCompat {
       assign(params, args) {
         params.set('test', 1)
@@ -625,11 +625,11 @@ describe("Test namespace module", function() {
     };
     var namespace = new TestNamespace({'foo': 1, 'bar': 1});
     ExperimentSetupCompat.registerExperimentInput('userid', 'hi');
-    expect(namespace.get('test')).toBe(1);
+    expect(await namespace.get('test')).toBe(1);
     expect(globalLog.length).toEqual(1);
   });
 
-  it('actually works', function() {
+  it('actually works', async function() {
     class TestNamespaces extends BaseTestNamespace {
       setup() {
         this.setName('testomg');
@@ -650,14 +650,14 @@ describe("Test namespace module", function() {
     for (var i = 0; i < total; i++) {
       ExperimentSetup.registerExperimentInput('userid', i);
       var n = new TestNamespaces();
-      if (n.get('test')) {
+      if (await n.get('test')) {
         count += 1;
       }
     }
     expect(count >= 5500 && count <= 6500).toBe(true);
   });
 
-  it('actually works (compat)', function() {
+  it('actually works (compat)', async function() {
     class TestNamespaces extends BaseTestNamespaceCompat {
       setup() {
         this.setName('testomg');
@@ -678,7 +678,7 @@ describe("Test namespace module", function() {
     for (var i = 0; i < total; i++) {
       ExperimentSetupCompat.registerExperimentInput('userid', i);
       var n = new TestNamespaces();
-      if (n.get('test')) {
+      if (await n.get('test')) {
         count += 1;
       }
     }

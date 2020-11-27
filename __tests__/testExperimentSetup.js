@@ -113,30 +113,30 @@ class BaseTestNamespaceCompat extends NamespaceCompat.SimpleNamespace {
 };
 
 describe("Test the experiment setup module", function() {
-  it('works with global experiment inputs', function() {
+  it('works with global experiment inputs', async function() {
     var namespace = new BaseTestNamespace({'userid': 'a'});
-    var fooVal = namespace.get('foo');
-    var foobarVal = namespace.get('foobar');
+    var fooVal = await namespace.get('foo');
+    var foobarVal = await namespace.get('foobar');
     var namespace2 = new BaseTestNamespace();
     ExperimentSetup.registerExperimentInput('userid', 'a');
-    expect(fooVal).toEqual(namespace2.get('foo'));
-    expect(foobarVal).toEqual(namespace2.get('foobar'));
+    expect(fooVal).toEqual(await namespace2.get('foo'));
+    expect(foobarVal).toEqual(await namespace2.get('foobar'));
   });
 
-  it('works with global experiment inputs (compat)', function() {
+  it('works with global experiment inputs (compat)', async function() {
     var namespace = new BaseTestNamespaceCompat({'userid': 'a'});
-    var fooVal = namespace.get('foo');
-    var foobarVal = namespace.get('foobar');
+    var fooVal = await namespace.get('foo');
+    var foobarVal = await namespace.get('foobar');
     var namespace2 = new BaseTestNamespaceCompat();
     ExperimentSetupCompat.registerExperimentInput('userid', 'a');
-    expect(fooVal).toEqual(namespace2.get('foo'));
-    expect(foobarVal).toEqual(namespace2.get('foobar'));
+    expect(fooVal).toEqual(await namespace2.get('foo'));
+    expect(foobarVal).toEqual(await namespace2.get('foobar'));
   });
 
-  it('works with namespace scoped inputs', function() {
+  it('works with namespace scoped inputs', async function() {
     var namespace = new BaseTestNamespace({'userid': 'a'});
     ExperimentSetup.registerExperimentInput('paramVal', '3', namespace.getName());
-    expect(namespace.get('paramVal')).toEqual('3');
+    expect(await namespace.get('paramVal')).toEqual('3');
 
     class TestNamespace extends BaseTestNamespace {
       setup() {
@@ -146,14 +146,14 @@ describe("Test the experiment setup module", function() {
     }
 
     var namespace2 = new TestNamespace();
-    expect(namespace2.get('foo')).toBeUndefined();
-    expect(namespace2.get('paramVal')).toBeUndefined();
+    expect(await namespace2.get('foo')).toBeUndefined();
+    expect(await namespace2.get('paramVal')).toBeUndefined();
   });
 
-  it('works with namespace scoped inputs (compat)', function() {
+  it('works with namespace scoped inputs (compat)', async function() {
     var namespace = new BaseTestNamespaceCompat({'userid': 'a'});
     ExperimentSetupCompat.registerExperimentInput('paramVal', '3', namespace.getName());
-    expect(namespace.get('paramVal')).toEqual('3');
+    expect(await namespace.get('paramVal')).toEqual('3');
 
     class TestNamespace extends BaseTestNamespaceCompat {
       setup() {
@@ -163,25 +163,25 @@ describe("Test the experiment setup module", function() {
     }
 
     var namespace2 = new TestNamespace();
-    expect(namespace2.get('foo')).toEqual('b');
-    expect(namespace2.get('paramVal')).toBeUndefined();
+    expect(await namespace2.get('foo')).toEqual('b');
+    expect(await namespace2.get('paramVal')).toBeUndefined();
   });
 
-  it('works with function inputs', function() {
+  it('works with function inputs', async function() {
     var namespace = new BaseTestNamespace({'userid': 'a'});
     var funct = function() {
       return '3';
     };
     ExperimentSetup.registerExperimentInput('funcVal', funct);
-    expect(namespace.get('funcVal')).toEqual('3');
+    expect(await namespace.get('funcVal')).toEqual('3');
   });
 
-  it('works with function inputs (compat)', function() {
+  it('works with function inputs (compat)', async function() {
     var namespace = new BaseTestNamespaceCompat({'userid': 'a'});
     var funct = function() {
       return '3';
     };
     ExperimentSetupCompat.registerExperimentInput('funcVal', funct);
-    expect(namespace.get('funcVal')).toEqual('3');
+    expect(await namespace.get('funcVal')).toEqual('3');
   });
 });
