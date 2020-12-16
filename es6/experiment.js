@@ -2,9 +2,9 @@ import { shallowCopy, extend, isObject, forEach, map, trimTrailingWhitespace, ge
 
 export default function provideExperiment(Assignment) {
   class Experiment {
-    constructor(inputs) {
+    constructor(inputs, wasLogged) {
       this.inputs = inputs;
-      this._exposureLogged = false;
+      this._exposureLogged = wasLogged || false;
       this._salt = null;
       this._inExperiment = true;
       this._autoExposureLog = true;
@@ -35,9 +35,9 @@ export default function provideExperiment(Assignment) {
       }
     }
 
-    requireExposureLogging(paramName) {
+    async requireExposureLogging(paramName) {
       if (this.shouldLogExposure(paramName)) {
-        this.logExposure();
+        return this.logExposure();
       }
     }
 
@@ -146,31 +146,35 @@ export default function provideExperiment(Assignment) {
       this._autoExposureLog = value;
     }
 
-    getParams() {
+    async getParams() {
       this.requireAssignment();
-      this.requireExposureLogging();
+      await this.requireExposureLogging()
       return this._assignment.getParams();
     }
 
-    get(name, def) {
+    async get(name, def) {
       this.requireAssignment();
-      this.requireExposureLogging(name);
+      await this.requireExposureLogging(name);
       this.setLocalOverride(name);
       return this._assignment.get(name, def);
     }
 
-    toString() {
+    async toString() {
       this.requireAssignment();
-      this.requireExposureLogging();
+      await this.requireExposureLogging();
       return JSON.stringify(this.__asBlob());
     }
+    
+    setExposureLogged() {
+      this._exposureLogged = true;
+    }
 
-    logExposure(extras) {
+    async logExposure(extras) {
       if (!this.inExperiment()) {
         return;
       }
       this._exposureLogged = true;
-      this.logEvent('exposure', extras);
+      return this.logEvent('exposure', extras);
     }
 
     shouldLogExposure(paramName) {
@@ -193,19 +197,19 @@ export default function provideExperiment(Assignment) {
         extraPayload = { 'event': eventType };
       }
 
-      this.log(this.__asBlob(extraPayload));
+      return this.log(this.__asBlob(extraPayload));
     }
 
     configureLogger() {
-      throw "IMPLEMENT configureLogger";
+      // Override if needed
     }
 
-    log(data) {
+    async log(data) {
       throw "IMPLEMENT log";
     }
 
     previouslyLogged() {
-      throw "IMPLEMENT previouslyLogged";
+      return this._exposureLogged;
     }
   }
 

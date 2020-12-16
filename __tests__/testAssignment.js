@@ -8,19 +8,19 @@ var testerSalt = 'test_salt';
 
 
 describe('Test the assignment module', function() {
-  it('Should set constants correctly', function() {
+  it('Should set constants correctly', async function() {
     var a = new Assignment(testerSalt);
     a.set('foo', 12);
-    expect(a.get('foo')).toBe(12);
+    expect(await a.get('foo')).toBe(12);
   });
 
-  it('Should set constants correctly (compat)', function() {
+  it('Should set constants correctly (compat)', async function() {
     var a = new AssignmentCompat(testerSalt);
     a.set('foo', 12);
-    expect(a.get('foo')).toBe(12);
+    expect(await a.get('foo')).toBe(12);
   });
 
-  it('Should work with uniform choice', function() {
+  it('Should work with uniform choice', async function() {
     var a = new Assignment(testerSalt);
     var choices = ['a', 'b'];
 
@@ -28,12 +28,12 @@ describe('Test the assignment module', function() {
     a.set('bar', new UniformChoice({'choices': choices, 'unit': testerUnit}));
     a.set('baz', new UniformChoice({'choices': choices, 'unit': testerUnit}));
 
-    expect(a.get('foo')).toEqual('a');
-    expect(a.get('bar')).toEqual('a');
-    expect(a.get('baz')).toEqual('a');
+    expect(await a.get('foo')).toEqual('a');
+    expect(await a.get('bar')).toEqual('a');
+    expect(await a.get('baz')).toEqual('a');
   });
 
-  it('Should work with uniform choice (compat)', function() {
+  it('Should work with uniform choice (compat)', async function() {
     var a = new AssignmentCompat(testerSalt);
     var choices = ['a', 'b'];
 
@@ -41,92 +41,92 @@ describe('Test the assignment module', function() {
     a.set('bar', new UniformChoiceCompat({'choices': choices, 'unit': testerUnit}));
     a.set('baz', new UniformChoiceCompat({'choices': choices, 'unit': testerUnit}));
 
-    expect(a.get('foo')).toEqual('b');
-    expect(a.get('bar')).toEqual('a');
-    expect(a.get('baz')).toEqual('a');
+    expect(await a.get('foo')).toEqual('b');
+    expect(await a.get('bar')).toEqual('a');
+    expect(await a.get('baz')).toEqual('a');
   });
 
-  it('Should return default values', function() {
+  it('Should return default values', async function() {
     var a = new Assignment(testerSalt);
     a.set('x', 5);
     a.set('y', 6);
-    expect(a.get('z', 'boom')).toEqual('boom');
-    expect(a.get('test_undefined', 'boom')).toEqual('boom')
-    expect(a.get('test_null', 'boom')).toEqual('boom')
+    expect(await a.get('z', 'boom')).toEqual('boom');
+    expect(await a.get('test_undefined', 'boom')).toEqual('boom')
+    expect(await a.get('test_null', 'boom')).toEqual('boom')
   });
 
-  it('Should return default values (compat)', function() {
+  it('Should return default values (compat)', async function() {
     var a = new AssignmentCompat(testerSalt);
     a.set('x', 5);
     a.set('y', 6);
     a.set('test_undefined', undefined)
     a.set('test_null', null)
-    expect(a.get('z', 'boom')).toEqual('boom');
-    expect(a.get('test_undefined', 'boom')).toEqual('boom')
-    expect(a.get('test_null', 'boom')).toEqual('boom')
+    expect(await a.get('z', 'boom')).toEqual('boom');
+    expect(await a.get('test_undefined', 'boom')).toEqual('boom')
+    expect(await a.get('test_null', 'boom')).toEqual('boom')
   });
 
-  it('Should work with overrides', function() {
+  it('Should work with overrides', async function() {
     var a = new Assignment(testerSalt);
     a.setOverrides({'x': 42, 'y': 43});
     a.set('x', 5);
     a.set('y', 6);
-    expect(a.get('x')).toEqual(42);
-    expect(a.get('y')).toEqual(43);
+    expect(await a.get('x')).toEqual(42);
+    expect(await a.get('y')).toEqual(43);
   });
 
-  it('Should work with overrides (compat)', function() {
+  it('Should work with overrides (compat)', async function() {
     var a = new AssignmentCompat(testerSalt);
     a.setOverrides({'x': 42, 'y': 43});
     a.set('x', 5);
     a.set('y', 6);
-    expect(a.get('x')).toEqual(42);
-    expect(a.get('y')).toEqual(43);
+    expect(await a.get('x')).toEqual(42);
+    expect(await a.get('y')).toEqual(43);
   });
 
-  it('Should work with falsy overrides', function() {
+  it('Should work with falsy overrides', async function() {
     var a = new Assignment(testerSalt);
     a.setOverrides({'x': 0, 'y': '', 'z': false});
     a.set('x', 5);
     a.set('y', 6);
     a.set('z', 7);
-    expect(a.get('x')).toEqual(0);
-    expect(a.get('y')).toEqual('');
-    expect(a.get('z')).toEqual(false);
+    expect(await a.get('x')).toEqual(0);
+    expect(await a.get('y')).toEqual('');
+    expect(await a.get('z')).toEqual(false);
   });
 
-  it('Should work with falsy overrides (compat)', function() {
+  it('Should work with falsy overrides (compat)', async function() {
     var a = new AssignmentCompat(testerSalt);
     a.setOverrides({'x': 0, 'y': '', 'z': false});
     a.set('x', 5);
     a.set('y', 6);
     a.set('z', 7);
-    expect(a.get('x')).toEqual(0);
-    expect(a.get('y')).toEqual('');
-    expect(a.get('z')).toEqual(false);
+    expect(await a.get('x')).toEqual(0);
+    expect(await a.get('y')).toEqual('');
+    expect(await a.get('z')).toEqual(false);
   });
 
-  it('Should work with custom salts', function() {
+  it('Should work with custom salts', async function() {
     var a = new Assignment(testerSalt);
 
     a.set('foo', new UniformChoice({'choices': [0, 1, 2, 3, 4, 5, 6, 7], 'unit': testerUnit }));
-    expect(a.get('foo')).toEqual(2);
+    expect(await a.get('foo')).toEqual(2);
 
     a.set('saltSeparator', ',');
     a.set('foo', new UniformChoice({'choices': [0, 1, 2, 3, 4, 5, 6, 7], 'unit': testerUnit }));
 
-    expect(a.get('foo')).toEqual(7);
+    expect(await a.get('foo')).toEqual(7);
   });
 
-  it('Should work with custom salts (compat)', function() {
+  it('Should work with custom salts (compat)', async function() {
     var a = new AssignmentCompat(testerSalt);
 
     a.set('foo', new UniformChoiceCompat({'choices': [0, 1, 2, 3, 4, 5, 6, 7], 'unit': testerUnit }));
-    expect(a.get('foo')).toEqual(7);
+    expect(await a.get('foo')).toEqual(7);
 
     a.set('saltSeparator', ',');
     a.set('foo', new UniformChoiceCompat({'choices': [0, 1, 2, 3, 4, 5, 6, 7], 'unit': testerUnit }));
 
-    expect(a.get('foo')).toEqual(6);
+    expect(await a.get('foo')).toEqual(6);
   });
 });
